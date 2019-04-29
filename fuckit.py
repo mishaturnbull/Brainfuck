@@ -6,7 +6,7 @@ Take a string and fuck it!
 """
 
 
-ASCII = dict(zip(xrange(256), [chr(c) for c in xrange(256)]))
+ASCII = dict(zip(range(256), [chr(c) for c in range(256)]))
 R_ASCII = dict(zip(ASCII.values(), ASCII.keys()))
 
 # yes, I know 0 and 1 aren't prime but for this it works that way
@@ -15,12 +15,14 @@ PRIMES = [0, 1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59,
           137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199,
           211, 223, 227, 229, 233, 239, 241, 251]
 
+
 def get_prime_factors(number):
-    for i in xrange(2, number):
+    for i in range(2, number):
         rd, qt = divmod(number, i)
         if not qt: # if equal to zero
             return [i] + get_prime_factors(rd)
     return [number]
+
 
 class Fucker(object):
 

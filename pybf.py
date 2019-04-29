@@ -14,9 +14,7 @@ This interpereter has a few differences from classic Brainfuck:
   memory.  In a x32 system, I believe this is 2**31 cells total (which,
   although very large, is not infinite.)
 """
-from __future__ import (print_function, generators, division)
 
-#import cStringIO
 import string
 import copy
 import sys
@@ -35,8 +33,8 @@ __all__ = ["DEF_ARRAY", "DEF_VAL", "MAX_VAL", "ASCII", "R_ASCII", "CMDS",
 DEF_ARRAY = {0: 0}
 DEF_VAL = 0
 MAX_VAL = 256
-ASCII = dict(zip(xrange(MAX_VAL),
-                 [chr(c) for c in xrange(MAX_VAL)]))
+ASCII = dict(zip(range(MAX_VAL),
+                 [chr(c) for c in range(MAX_VAL)]))
 R_ASCII = dict(zip(ASCII.values(), ASCII.keys()))
 CMDS = '+-.,><[]'
 NONCMDS = ''.join([c for c in string.maketrans('', '') if c not in CMDS])
@@ -75,6 +73,7 @@ def buildbracemap(code):
             bracemap[start] = position
             bracemap[position] = start
     return bracemap
+
 
 def println(line):
     # Some platforms seem to have errors printing null character; use this
@@ -125,7 +124,6 @@ class BF_Object(object):
         self.input_val = input_val
         self.cmdindex = 0
         self.bracemap = buildbracemap(self.code)
-        self.stdout = cStringIO.StringIO()
         self.dbg = debug
 
     def parse(self):
@@ -155,7 +153,7 @@ class BF_Object(object):
 
     def onechr(self):
         while len(self.input_val) == 0:
-            self.input_val = raw_input('> ')
+            self.input_val = input('> ')
         parts = self.input_val[0], self.input_val[1:]
         self.input_val = parts[1]
         return parts[0]
@@ -262,7 +260,7 @@ def step_debug(code, input_val='', debug=True):
     print(fmts('ini', bf.a, bf.pos))
     while bf.cmdindex < len(bf.instructions):
         print(pointer(bf.cmdindex, bf.code))
-        cmd = raw_input('DBG> ')[0]
+        cmd = input('DBG> ')[0]
         if cmd == "n":
             bf.execute_one()
             print(fmts(bf.cmdindex, bf.a, bf.pos))
@@ -304,7 +302,7 @@ def watch(code, input_val='', delay=0.3):
 def start_console():
     running = True
     while running:
-        inp = raw_input("PYBF> ")
+        inp = input("PYBF> ")
         if inp.lower() in ['exit', 'quit', 'q']:
             print("Have a good day!")
             running = False
