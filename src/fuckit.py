@@ -26,6 +26,34 @@ def get_prime_factors(number):
     return [number]
 
 
+def find_good_factors(number):
+    a, b, p = 1, 72, 0
+    if number in PRIMES:
+        number -= 1
+        p += 1
+
+    primefactors = get_prime_factors(number)
+
+    ratio = lambda a, b: abs(1 - a/b)
+
+    def factors(pfactors, s):
+        l_a, l_b = pfactors[:s], pfactors[s:]
+        p = functools.reduce(lambda x, y: x*y, l_a)
+        q = functools.reduce(lambda x, y: x*y, l_b)
+        return p, q
+
+    best_ratio = ratio(a, b)
+    best_s = 0
+    for s in range(1, len(primefactors)):
+        newratio = ratio(*factors(primefactors, s))
+        if newratio < best_ratio:
+            best_ratio = newratio
+            best_s = s
+
+    c, d = factors(primefactors, best_s)
+    return c, d, p
+
+
 class Fucker(object):
 
     def __init__(self, fucking):
@@ -42,7 +70,7 @@ class Fucker(object):
 
     @classmethod
     def fuckit(cls, string):
-        return cls(string).nmul()
+        return cls(string).optimul()
 
     def onecell(self):
         return self._fmtmake("{}.[-]")
@@ -103,5 +131,19 @@ class Fucker(object):
                 fckd += fmtb.format(a='+'*a, b='+'*b, p=padd)
             else:
                 a, b = get_added(char)
+                fckd += fmtm.format(a='+'*a, b='+'*b)
+        return fckd
+
+    def optimul(self):
+        fmtm = "{a}[>{b}<-]>.> "
+        fmtb = "{a}[>{b}<-]>{p}.> "
+        fckd = ''
+
+        for char in self.ascii:
+            if char in PRIMES:
+                a, b, p = find_good_factors(char)
+                fckd += fmtb.format(a='+'*a, b='+'*b, p='+'*p)
+            else:
+                a, b, p = find_good_factors(char)
                 fckd += fmtm.format(a='+'*a, b='+'*b)
         return fckd
