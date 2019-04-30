@@ -5,6 +5,8 @@ Take a string and fuck it!
 @author: Misha
 """
 
+import functools
+
 
 ASCII = dict(zip(range(256), [chr(c) for c in range(256)]))
 R_ASCII = dict(zip(ASCII.values(), ASCII.keys()))
@@ -57,8 +59,8 @@ class Fucker(object):
             pfactors = get_prime_factors(char)
             s = int(round(len(pfactors)/2.))
             l_a, l_b = pfactors[:s], pfactors[s:]
-            a = reduce(lambda x, y: x*y, l_a)
-            b = reduce(lambda x, y: x*y, l_b)
+            a = functools.reduce(lambda x, y: x*y, l_a)
+            b = functools.reduce(lambda x, y: x*y, l_b)
             return a, b
 
         for char in self.ascii:
@@ -85,8 +87,8 @@ class Fucker(object):
             pfactors = get_prime_factors(char)
             s = int(round(len(pfactors)/2.))
             l_a, l_b = pfactors[:s], pfactors[s:]
-            a = reduce(lambda x, y: x*y, l_a)
-            b = reduce(lambda x, y: x*y, l_b)
+            a = functools.reduce(lambda x, y: x*y, l_a)
+            b = functools.reduce(lambda x, y: x*y, l_b)
             return a, b
 
         for char in self.ascii:

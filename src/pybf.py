@@ -15,7 +15,7 @@ This interpereter has a few differences from classic Brainfuck:
   although very large, is not infinite.)
 """
 
-import string
+import io
 import copy
 import sys
 import time
@@ -26,7 +26,7 @@ import time
 
 __author__ = 'mishaturnbull'
 __all__ = ["DEF_ARRAY", "DEF_VAL", "MAX_VAL", "ASCII", "R_ASCII", "CMDS",
-           "NONCMDS", "bf_debugged", "clean_code", "buildbracemap",
+           "bf_debugged", "clean_code", "buildbracemap",
            "println", "BF_Object", "execute", "step_debug", "start_console",
            "pointer", "watch", "EXAMPLES"]
 
@@ -37,7 +37,6 @@ ASCII = dict(zip(range(MAX_VAL),
                  [chr(c) for c in range(MAX_VAL)]))
 R_ASCII = dict(zip(ASCII.values(), ASCII.keys()))
 CMDS = '+-.,><[]'
-NONCMDS = ''.join([c for c in string.maketrans('', '') if c not in CMDS])
 
 pointer = lambda n, s: s + '\n' + ' ' * ~-n + '^'
 
@@ -59,7 +58,11 @@ def bf_debugged(func):
 
 
 def clean_code(code):
-    return code.translate(None, NONCMDS)
+    cleaned = ""
+    for char in code:
+        if char in CMDS:
+            cleaned += char
+    return cleaned
 
 
 def buildbracemap(code):
@@ -125,6 +128,7 @@ class BF_Object(object):
         self.cmdindex = 0
         self.bracemap = buildbracemap(self.code)
         self.dbg = debug
+        self.stdout = io.StringIO("")
 
     def parse(self):
         """Parse a string into brainfuck instructions."""
@@ -159,10 +163,10 @@ class BF_Object(object):
         return parts[0]
 
     def printarray(self):
-        a = self.a.values()
+        a = list(self.a.values())
         # highlight the current cell
         a[self.pos] = '*{x}*'.format(x=self.a[self.pos])
-        p = str(a).translate(None, "'")
+        p = str(a)
         sys.stdout.write('\r{}'.format(p))
         sys.stdout.flush()
 
@@ -245,11 +249,12 @@ def step_debug(code, input_val='', debug=True):
     They may enter:
 
         Command | Action
-        --------+-------------------------------------------------------
+        --------+----------------------------------------------------------
         n       | Execute one instruction, move on to next
         q       | Terminate the program
         s       | Skip the instruction, move on to next
         e       | Execute the rest of the program with no more debugging
+        w       | Execute the rest of the program at speed with debug info
         o       | Print the contents of the program's stdout file
     """
 
@@ -275,6 +280,12 @@ def step_debug(code, input_val='', debug=True):
                 bf.execute_one()
                 bf.cmdindex += 1
             break
+        elif cmd == 'w':
+            while bf.cmdindex < len(bf.instructions):
+                bf.execute_one()
+                print(fmts(bf.cmdindex, bf.a, bf.pos))
+                bf.cmdindex += 1
+                time.sleep(0.1)
         elif cmd == "o":
             println(bf.stdout.getvalue())
     println(bf.stdout.getvalue())
