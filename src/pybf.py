@@ -325,3 +325,18 @@ def start_console():
 EXAMPLES = [(',[>,]<[.<]', "Print the input, reversed."),
             (',[>+<-]', "Move data from a[0] to a[1]."),
             ('.+[.+]', "Print the ASCII character set.")]
+
+
+if __name__ == '__main__':
+    print("Doing stuff!")
+    import sys
+    print("Sys.argv: {}".format(sys.argv))
+    try:
+        codesnip = sys.argv[1:]
+        codesnip = ''.join(codesnip)
+    except IndexError:
+        sys.exit(0)
+    print("Code snippet: {}".format(codesnip))
+    bfo = BF_Object(codesnip)
+    bfo.parse()
+    bfo.execute()
